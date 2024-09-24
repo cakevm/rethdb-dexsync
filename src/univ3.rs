@@ -1,11 +1,10 @@
 use crate::univ3::UniswapV3Factory::PoolCreated;
 use alloy::primitives::{address, b256, Address, B256};
-use alloy_sol_types::{sol, SolEvent};
+use alloy_rpc_types::{BlockNumHash, Filter, FilteredParams};
+use alloy_sol_types::sol;
 use reth_primitives::BlockHashOrNumber;
-use reth_provider::{AccountReader, BlockNumReader, BlockReader, HeaderProvider, ProviderError, ReceiptProvider, StateProvider};
-use reth_rpc::eth::EthApiServer;
+use reth_provider::{BlockReader, ProviderError};
 use reth_rpc_eth_types::logs_utils::append_matching_block_logs;
-use reth_rpc_types::{BlockNumHash, Filter, FilteredParams};
 use std::iter::StepBy;
 use std::ops::RangeInclusive;
 
@@ -17,10 +16,10 @@ sol! (
 
 const POOL_CREATED: B256 = b256!("783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118");
 
-pub fn read_univ3_pairs<T: BlockReader>(provider: T) -> eyre::Result<Vec<Address>> {
+pub fn read_univ3_pools<T: BlockReader>(provider: T) -> eyre::Result<Vec<Address>> {
     let from_block = 12369621u64; // deployment of univ3 factory
     let to_block = provider.last_block_number()?; // current block number
-    let max_headers_range = 1000u64;
+    let max_headers_range = 10000u64;
 
     let univ3_factory = address!("1F98431c8aD98523631AE4a59f267346ea31F984");
 
@@ -35,14 +34,13 @@ pub fn read_univ3_pairs<T: BlockReader>(provider: T) -> eyre::Result<Vec<Address
     println!("All blocks: {} -> {}", from_block, to_block);
     for (from, to) in BlockRangeInclusiveIter::new(from_block..=to_block, max_headers_range) {
         let headers = provider.headers_range(from..=to)?;
-        println!("from: {}, to: {}, {:#?}", from, to, headers);
+        println!("from: {}, to: {}, len: {}", from, to, headers.len());
 
         for (idx, header) in headers.iter().enumerate() {
             // only if filter matches
             if FilteredParams::matches_address(header.logs_bloom, &address_filter)
                 && FilteredParams::matches_topics(header.logs_bloom, &topics_filter)
             {
-                println!("hit");
                 // these are consecutive headers, so we can use the parent hash of the next
                 // block to get the current header's hash
                 let block_hash = match headers.get(idx + 1) {

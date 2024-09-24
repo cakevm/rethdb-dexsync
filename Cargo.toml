@@ -7,19 +7,20 @@ license = "Apache-2.0"
 
 
 [dependencies]
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-db= { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-provider = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-rpc = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-rpc-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-node-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth" }
+reth-db= { git = "https://github.com/paradigmxyz/reth" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth" }
+reth-provider = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth" }
+reth-node-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth" }
 
 alloy = { version = "0.3.6", features = ["full"] }
 alloy-sol-types = "0.8.3"
-
+alloy-rpc-types = "0.3.6"
 
 
 eyre = "0.6"
