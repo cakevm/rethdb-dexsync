@@ -14,3 +14,6 @@ cargo run --release --example univ3_pools
 
 ## Acknowledgements
 This crate is based on the [reth db-access example](https://github.com/paradigmxyz/reth/tree/main/examples/db-access).
+
+## License
+This project is licensed under the [Apache 2.0](./LICENSE).
