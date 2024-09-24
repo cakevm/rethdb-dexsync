@@ -5111,6 +5111,8 @@ dependencies = [
  "reth-node-types",
  "reth-primitives",
  "reth-provider",
+ "reth-rpc",
+ "reth-rpc-eth-types",
  "reth-rpc-types",
 ]
 

@@ -11,9 +11,11 @@ reth-chainspec = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-db= { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-primitives = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-provider = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
+reth-rpc = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-rpc-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 reth-node-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag = "v1.0.7"}
 
 alloy = { version = "0.3.6", features = ["full"] }
 alloy-sol-types = "0.8.3"
