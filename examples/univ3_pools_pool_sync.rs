@@ -4,7 +4,7 @@ use pool_sync::{Chain, PoolInfo, PoolSync, PoolType};
 #[tokio::main]
 async fn main() -> Result<()> {
     // Configure and build the PoolSync instance
-    let pool_sync = PoolSync::builder().add_pool(PoolType::UniswapV2).chain(Chain::Ethereum).build()?;
+    let pool_sync = PoolSync::builder().add_pool(PoolType::UniswapV3).chain(Chain::Ethereum).build()?;
 
     // Synchronize pools
     let (pools, _last_synced_block) = pool_sync.sync_pools().await?;

@@ -1,7 +1,7 @@
 use alloy::primitives::address;
 use alloy::providers::ProviderBuilder;
 use amms::amm::factory::Factory;
-use amms::amm::uniswap_v2::factory::UniswapV2Factory;
+use amms::amm::uniswap_v3::factory::UniswapV3Factory;
 use amms::sync;
 use eyre::Result;
 use std::sync::Arc;
@@ -15,8 +15,8 @@ async fn main() -> Result<()> {
     let provider = Arc::new(ProviderBuilder::new().on_http(rpc_endpoint.parse()?));
 
     let factories = vec![
-        // Add UniswapV2
-        Factory::UniswapV2Factory(UniswapV2Factory::new(address!("5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), 2638438, 300)),
+        // Add UniswapV3
+        Factory::UniswapV3Factory(UniswapV3Factory::new(address!("1F98431c8aD98523631AE4a59f267346ea31F984"), 185)),
     ];
 
     // Sync pairs
