@@ -1,7 +1,7 @@
 use reth_chainspec::ChainSpecBuilder;
 use reth_db::mdbx::DatabaseArguments;
 use reth_db::{open_db_read_only, ClientVersion, DatabaseEnv};
-use reth_direct_db_uniswap_storage::read_univ3_pools;
+use reth_direct_db_uniswap_storage::read_univ3_position_pools;
 use reth_node_ethereum::EthereumNode;
 use reth_node_types::NodeTypesWithDBAdapter;
 use reth_provider::{providers::StaticFileProvider, ProviderFactory};
@@ -20,10 +20,8 @@ fn main() -> eyre::Result<()> {
         StaticFileProvider::read_only(db_path.join("static_files"), true)?,
     );
 
-    let provider = factory.provider()?;
-
-    // Read all pools from UniswapV3Factory
-    let pools = read_univ3_pools(&provider)?;
+    // Read all positions from NonfungiblePositionManager
+    let pools = read_univ3_position_pools(factory.latest()?)?;
     for pool in pools.iter().take(3) {
         println!("Pool: {:#?}", pool);
     }

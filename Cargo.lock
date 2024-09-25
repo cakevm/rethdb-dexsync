@@ -6439,6 +6439,7 @@ dependencies = [
  "alloy-sol-types 0.8.3",
  "amms",
  "eyre",
+ "log",
  "pool-sync",
  "reth-blockchain-tree",
  "reth-chainspec",

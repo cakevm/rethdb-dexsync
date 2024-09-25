@@ -31,3 +31,4 @@ tracing-subscriber = "0.3"
 
 pool-sync = { git="https://github.com/Zacholme7/PoolSync", rev="29a6e5a" }
 amms = { git="https://github.com/darkforestry/amms-rs", rev="a4edb40"}
+log = "0.4.22"

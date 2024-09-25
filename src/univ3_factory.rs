@@ -1,4 +1,4 @@
-use crate::univ3::UniswapV3Factory::PoolCreated;
+use crate::univ3_factory::UniswapV3Factory::PoolCreated;
 use alloy::primitives::{address, b256, Address, B256};
 use alloy_rpc_types::{BlockNumHash, Filter, FilteredParams};
 use alloy_sol_types::sol;

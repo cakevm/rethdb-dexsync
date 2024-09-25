@@ -1,7 +1,8 @@
+use alloy::primitives::aliases::U112;
 use alloy::primitives::{address, b256, keccak256, Address, B256, U160, U256, U32};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
-use reth_provider::{AccountReader, StateProvider};
+use reth_provider::StateProvider;
 
 const ALL_PAIRS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000003");
 
@@ -16,8 +17,8 @@ pub struct Univ2Pair {
     pub token0: Address,
     pub token1: Address,
     pub block_timestamp_last: U32,
-    pub reserve0: U160,
-    pub reserve1: U160,
+    pub reserve0: U112,
+    pub reserve1: U112,
 }
 
 pub fn read_univ2_pairs<T: StateProvider>(provider: T) -> eyre::Result<Vec<Univ2Pair>> {
@@ -39,7 +40,7 @@ pub fn read_univ2_pairs<T: StateProvider>(provider: T) -> eyre::Result<Vec<Univ2
     Ok(pairs)
 }
 
-fn read_array_item_address<T: StateProvider + AccountReader>(
+fn read_array_item_address<T: StateProvider>(
     provider: T,
     contract_address: Address,
     slot: B256,
@@ -56,7 +57,7 @@ fn read_array_item_address<T: StateProvider + AccountReader>(
     }
 }
 
-fn read_pair<T: StateProvider + AccountReader>(provider: T, pair_address: Address) -> eyre::Result<Univ2Pair> {
+fn read_pair<T: StateProvider>(provider: T, pair_address: Address) -> eyre::Result<Univ2Pair> {
     let token0 = match provider.storage(pair_address, PAIR_TOKEN0) {
         Ok(storage_value) => match storage_value {
             None => return Err(eyre!("STORAGE_SLOT_NOT_FOUND token0, {:#?}", pair_address)),
@@ -75,12 +76,12 @@ fn read_pair<T: StateProvider + AccountReader>(provider: T, pair_address: Addres
 
     let (block_timestamp_last, reserve1, reserve0) = match provider.storage(pair_address, PAIR_RESERVE) {
         Ok(storage_value) => match storage_value {
-            None => (U32::ZERO, U160::ZERO, U160::ZERO), // pair not initialized
+            None => (U32::ZERO, U112::ZERO, U112::ZERO), // pair not initialized
             Some(value) => {
                 let bytes = value.to_be_bytes_vec();
                 let block_timestamp_last = U32::from_be_slice(&bytes[0..4]);
-                let reserve1 = U160::from_be_slice(&bytes[4..18]);
-                let reserve0 = U160::from_be_slice(&bytes[18..32]);
+                let reserve1 = U112::from_be_slice(&bytes[4..18]);
+                let reserve0 = U112::from_be_slice(&bytes[18..32]);
                 (block_timestamp_last, reserve1, reserve0)
             }
         },
