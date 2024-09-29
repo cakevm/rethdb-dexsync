@@ -8,10 +8,15 @@ license = "Apache-2.0"
 
 [dependencies]
 eyre = "0.6"
+lazy_static = "1.5.0"
+rayon = "1.10.0"
+rkyv = "0.8.8"
+thiserror = "1.0"
+tracing = "0.1"
 
 reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-db= { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
+reth-db = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4", features = ["asm-keccak"]}
 reth-provider = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
 reth-rpc = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
 reth-rpc-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
@@ -20,15 +25,13 @@ reth-node-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
 reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
 reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
 
-alloy = { version = "0.3.6", features = ["full"] }
+alloy = { version = "0.3.6", features = ["rpc-types", "asm-keccak"] }
 alloy-sol-types = "0.8.3"
-alloy-rpc-types = "0.3.6"
 
-# for comparison
+
+[dev-dependencies]
 tokio = { version = "1.0", features = ["full"] }
-tracing = "0.1"
 tracing-subscriber = "0.3"
 
 pool-sync = { git="https://github.com/Zacholme7/PoolSync", rev="29a6e5a" }
 amms = { git="https://github.com/darkforestry/amms-rs", rev="a4edb40"}
-log = "0.4.22"

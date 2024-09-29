@@ -1,12 +1,13 @@
 use reth_chainspec::ChainSpecBuilder;
 use reth_db::mdbx::DatabaseArguments;
 use reth_db::{open_db_read_only, ClientVersion, DatabaseEnv};
-use reth_direct_db_uniswap_storage::read_univ2_pairs;
+use reth_direct_db_uniswap_storage::{UniV2Factory, UNIV2_FACTORY};
 use reth_node_ethereum::EthereumNode;
 use reth_node_types::NodeTypesWithDBAdapter;
 use reth_provider::{providers::StaticFileProvider, ProviderFactory};
 use std::path::Path;
 use std::sync::Arc;
+use std::time::Instant;
 
 fn main() -> eyre::Result<()> {
     let db_path = std::env::var("RETH_DB_PATH")?;
@@ -21,11 +22,14 @@ fn main() -> eyre::Result<()> {
     );
 
     // Read all pairs from UniswapV2Factory
-    let pairs = read_univ2_pairs(factory.latest()?)?;
-    for pair in pairs.iter().take(3) {
-        println!("Pair: {:#?}", pair);
+    let now = Instant::now();
+    let univ2_factory = UniV2Factory::load_pools(factory.latest()?, UNIV2_FACTORY)?;
+    println!("Loaded UniswapV2Factory in {:?} sec", now.elapsed());
+
+    for (pair, reserve) in univ2_factory.pairs.iter().take(3) {
+        println!("Pair: {:#?}, Reserve: {:#?}", pair, reserve);
     }
-    println!("Total pairs: {}", pairs.len());
+    println!("Total pairs: {}", univ2_factory.pairs.len());
 
     Ok(())
 }
