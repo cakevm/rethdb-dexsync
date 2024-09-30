@@ -15,14 +15,14 @@ sol! (
 );
 
 const POOL_CREATED: B256 = b256!("783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118");
-const UNIV3_FACTORY: Address = address!("1F98431c8aD98523631AE4a59f267346ea31F984");
+const UNI_V3_FACTORY: Address = address!("1F98431c8aD98523631AE4a59f267346ea31F984");
 
 pub fn read_univ3_pools<T: BlockReader>(provider: T) -> eyre::Result<Vec<Address>> {
     let from_block = 12369621u64; // deployment of univ3 factory
     let to_block = provider.last_block_number()?; // current block number
     let max_headers_range = 10000u64;
 
-    let filter = Filter::default().address(UNIV3_FACTORY).event_signature(vec![POOL_CREATED]);
+    let filter = Filter::default().address(UNI_V3_FACTORY).event_signature(vec![POOL_CREATED]);
     let filter_params = FilteredParams::new(Some(filter.clone()));
 
     let address_filter = FilteredParams::address_filter(&filter.address);

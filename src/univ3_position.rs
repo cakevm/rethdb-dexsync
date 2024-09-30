@@ -7,14 +7,15 @@ use reth_provider::StateProvider;
 const POOL_INIT_CODE_HASH: B256 = b256!("e34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54");
 const NEXT_POOL_ID: B256 = b256!("000000000000000000000000000000000000000000000000000000000000000d");
 const POOL_ID_TO_POOL_KEY: B256 = b256!("000000000000000000000000000000000000000000000000000000000000000b");
+pub const UNI_V3_POSITION_MANAGER: Address = address!("c36442b4a4522e871399cd717abdd847ab11fe88");
 
 #[allow(dead_code)]
 #[derive(Debug)]
-pub struct Pool {
-    address: Address,
-    token0: Address,
-    token1: Address,
-    fee: U24,
+pub struct Univ3Pool {
+    pub address: Address,
+    pub token0: Address,
+    pub token1: Address,
+    pub fee: U24,
 }
 
 #[derive(Debug)]
@@ -24,8 +25,18 @@ pub struct PoolKey {
     fee: U24,
 }
 
-pub fn read_univ3_position_pools<T: StateProvider>(provider: T) -> eyre::Result<Vec<Pool>> {
-    let univ3_position_mng = address!("c36442b4a4522e871399cd717abdd847ab11fe88");
+pub struct UniV3PositionManager {
+    pub pools: Vec<Univ3Pool>,
+}
+
+impl UniV3PositionManager {
+    pub fn load_pools<T: StateProvider>(provider: T, univ3_position_mng: Address) -> eyre::Result<Self> {
+        let pools = read_univ3_position_pools(provider, univ3_position_mng)?;
+        Ok(UniV3PositionManager { pools })
+    }
+}
+
+pub fn read_univ3_position_pools<T: StateProvider>(provider: T, univ3_position_mng: Address) -> eyre::Result<Vec<Univ3Pool>> {
     let univ3_factory = address!("1F98431c8aD98523631AE4a59f267346ea31F984");
 
     let (next_pool_id, next_position_id) = match provider.storage(univ3_position_mng, NEXT_POOL_ID)? {
@@ -68,7 +79,7 @@ pub fn read_univ3_position_pools<T: StateProvider>(provider: T) -> eyre::Result<
         };
 
         let pool_address = compute_address(univ3_factory, &pool_key)?;
-        pool_addresses.push(Pool { address: pool_address, token0: pool_key.token0, token1: pool_key.token1, fee: pool_key.fee });
+        pool_addresses.push(Univ3Pool { address: pool_address, token0: pool_key.token0, token1: pool_key.token1, fee: pool_key.fee });
     }
 
     Ok(pool_addresses)

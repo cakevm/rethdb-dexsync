@@ -9,24 +9,23 @@ license = "Apache-2.0"
 [dependencies]
 eyre = "0.6"
 lazy_static = "1.5.0"
-rayon = "1.10.0"
 rkyv = "0.8.8"
 thiserror = "1.0"
 tracing = "0.1"
 
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-db = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4", features = ["asm-keccak"]}
-reth-provider = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-rpc = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-rpc-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-node-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
-reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", rev="d3114b4" }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth" }
+reth-db = { git = "https://github.com/paradigmxyz/reth" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", features = ["asm-keccak"]}
+reth-provider = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth" }
+reth-node-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth" }
 
 alloy = { version = "0.3.6", features = ["rpc-types", "asm-keccak"] }
-alloy-sol-types = "0.8.3"
+alloy-sol-types = "0.8.5"
 
 
 [dev-dependencies]

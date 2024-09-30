@@ -1,17 +1,11 @@
-use crate::cache::{CacheError, CachedPool};
+use crate::cache::CachedPool;
 use crate::PoolsCache;
 use alloy::primitives::aliases::U112;
 use alloy::primitives::{address, b256, keccak256, Address, B256, U160, U256, U32};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use lazy_static::lazy_static;
-use rayon::iter::IndexedParallelIterator;
-use rayon::iter::IntoParallelIterator;
-use rayon::iter::ParallelIterator;
-use rayon::ThreadPoolBuilder;
 use reth_provider::StateProvider;
-use std::io::Error;
-use std::sync::Mutex;
 use tracing::debug;
 
 const ALL_PAIRS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000003");
@@ -20,7 +14,7 @@ const PAIR_TOKEN0: B256 = b256!("00000000000000000000000000000000000000000000000
 const PAIR_TOKEN1: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000007");
 const PAIR_RESERVE: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000008");
 
-pub const UNIV2_FACTORY: Address = address!("5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f");
+pub const UNI_V2_FACTORY: Address = address!("5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f");
 
 lazy_static! {
     static ref ALL_PAIRS_START_SLOT: B256 = keccak256(ALL_PAIRS_SLOT.abi_encode());
@@ -52,11 +46,14 @@ pub struct UniV2Factory {
 }
 
 impl UniV2Factory {
-    pub fn load_pools<T: StateProvider>(provider: T, factory_address: Address) -> eyre::Result<Self> {
+    pub fn load_pairs<T: StateProvider>(provider: T, factory_address: Address) -> eyre::Result<Self> {
         // Read cached pairs if exists
         let mut pools_cache = match PoolsCache::load(factory_address) {
             Ok(pools_cache) => pools_cache,
-            Err(e) => PoolsCache::new(factory_address),
+            Err(e) => {
+                debug!("Failed to load pools cache: {}", e);
+                PoolsCache::new(factory_address)
+            }
         };
         debug!("Loaded pools cache: {}", pools_cache.pools.len());
         // Convert cached pools to pairs
@@ -65,7 +62,7 @@ impl UniV2Factory {
         // Add new pairs since last cache write from pair index
         let start_idx = if !pairs.is_empty() { pairs.len() - 1 } else { 0 };
         println!("Loaded new pools: {}", start_idx);
-        let (new_pairs, _) = read_univ2_pairs(&provider, factory_address, start_idx, 4)?;
+        let (new_pairs, _) = read_univ2_pairs(&provider, factory_address, start_idx)?;
         pairs.extend(new_pairs);
 
         // populate reserves for pairs
@@ -83,31 +80,23 @@ pub fn read_univ2_pairs<T: StateProvider>(
     provider: T,
     factory_address: Address,
     start_idx: usize,
-    num_threads: usize,
 ) -> eyre::Result<(Vec<UniV2Pair>, usize)> {
-    let pairs_length = match provider.storage(UNIV2_FACTORY, ALL_PAIRS_SLOT)? {
+    let pairs_length = match provider.storage(factory_address, ALL_PAIRS_SLOT)? {
         None => return Err(eyre!("Invalid pair length")),
         Some(l) => l.to::<usize>(),
     };
 
     let chunk_size: usize = 5000;
-    let pairs = Mutex::new(Vec::new());
-
-    let pool = ThreadPoolBuilder::new().num_threads(num_threads).build()?;
+    let mut pairs = Vec::new();
 
     // Reading in chunks to avoid long transaction error.
-    pool.install(|| {
-        (start_idx..pairs_length).into_par_iter().step_by(chunk_size).for_each(|start| {
-            let end = std::cmp::min(start + chunk_size, pairs_length);
-            match read_pairs_interval(&provider, factory_address, start, end) {
-                Ok(chunk_pairs) => {
-                    pairs.lock().unwrap().extend(chunk_pairs);
-                }
-                Err(e) => eprintln!("Error reading pairs interval: {:?}", e),
-            }
-        });
-    });
-    Ok((pairs.into_inner()?, pairs_length))
+    for start in (start_idx..pairs_length).step_by(chunk_size) {
+        let end = std::cmp::min(start + chunk_size, pairs_length);
+        let pairs_chunk = read_pairs_interval(&provider, factory_address, start, end)?;
+        pairs.extend(pairs_chunk);
+    }
+
+    Ok((pairs, pairs_length))
 }
 
 #[allow(dead_code)]
@@ -116,7 +105,6 @@ pub fn read_univ2_pairs_full<T: StateProvider>(
     provider: T,
     factory_address: Address,
     start_idx: usize,
-    num_threads: usize,
 ) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {
     let pairs_length = match provider.storage(factory_address, ALL_PAIRS_SLOT)? {
         None => return Err(eyre!("Invalid pair length")),
@@ -124,23 +112,16 @@ pub fn read_univ2_pairs_full<T: StateProvider>(
     };
 
     let chunk_size: usize = 5000;
-    let pairs = Mutex::new(Vec::new());
-
-    let pool = ThreadPoolBuilder::new().num_threads(num_threads).build()?;
+    let mut pairs = Vec::new();
 
     // Reading in chunks to avoid long transaction error.
-    pool.install(|| {
-        (start_idx..pairs_length).into_par_iter().step_by(chunk_size).for_each(|start| {
-            let end = std::cmp::min(start + chunk_size, pairs_length);
-            match read_pairs_full_interval(&provider, factory_address, start, end) {
-                Ok(chunk_pairs) => {
-                    pairs.lock().unwrap().extend(chunk_pairs);
-                }
-                Err(e) => eprintln!("Error reading pairs interval: {:?}", e),
-            }
-        });
-    });
-    Ok(pairs.into_inner()?)
+    for start in (start_idx..pairs_length).step_by(chunk_size) {
+        let end = std::cmp::min(start + chunk_size, pairs_length);
+        let pairs_chunk = read_pairs_full_interval(&provider, factory_address, start, end)?;
+        pairs.extend(pairs_chunk);
+    }
+
+    Ok(pairs)
 }
 
 /// Read all univ2 reserves for provides pairs from the factory contract.

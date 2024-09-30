@@ -1,7 +1,7 @@
 use reth_chainspec::ChainSpecBuilder;
 use reth_db::mdbx::DatabaseArguments;
 use reth_db::{open_db_read_only, ClientVersion, DatabaseEnv};
-use reth_direct_db_uniswap_storage::{UniV2Factory, UNIV2_FACTORY};
+use reth_direct_db_uniswap_storage::{UniV2Factory, UNI_V2_FACTORY};
 use reth_node_ethereum::EthereumNode;
 use reth_node_types::NodeTypesWithDBAdapter;
 use reth_provider::{providers::StaticFileProvider, ProviderFactory};
@@ -23,7 +23,7 @@ fn main() -> eyre::Result<()> {
 
     // Read all pairs from UniswapV2Factory
     let now = Instant::now();
-    let univ2_factory = UniV2Factory::load_pools(factory.latest()?, UNIV2_FACTORY)?;
+    let univ2_factory = UniV2Factory::load_pairs(factory.latest()?, UNI_V2_FACTORY)?;
     println!("Loaded UniswapV2Factory in {:?} sec", now.elapsed());
 
     for (pair, reserve) in univ2_factory.pairs.iter().take(3) {
