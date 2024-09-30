@@ -3,6 +3,7 @@ use alloy::primitives::{address, b256, keccak256, Address, B256, U256};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use reth_provider::StateProvider;
+use tracing::debug;
 
 const POOL_INIT_CODE_HASH: B256 = b256!("e34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54");
 const NEXT_POOL_ID: B256 = b256!("000000000000000000000000000000000000000000000000000000000000000d");
@@ -48,7 +49,7 @@ pub fn read_univ3_position_pools<T: StateProvider>(provider: T, univ3_position_m
             (next_pool_id, next_position_id)
         }
     };
-    println!("Next pool id: {}, Next position id: {}", next_pool_id, next_position_id);
+    debug!("Next pool id: {}, Next position id: {}", next_pool_id, next_position_id);
 
     let mut pool_addresses = vec![];
 
