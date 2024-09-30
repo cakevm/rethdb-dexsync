@@ -61,7 +61,7 @@ impl UniV2Factory {
 
         // Add new pairs since last cache write from pair index
         let start_idx = if !pairs.is_empty() { pairs.len() - 1 } else { 0 };
-        println!("Loaded new pools: {}", start_idx);
+        debug!("Loaded new pools: {}", start_idx);
         let (new_pairs, _) = read_univ2_pairs(&provider, factory_address, start_idx)?;
         pairs.extend(new_pairs);
 
@@ -86,7 +86,7 @@ pub fn read_univ2_pairs<T: StateProvider>(
         Some(l) => l.to::<usize>(),
     };
 
-    let chunk_size: usize = 5000;
+    let chunk_size: usize = 1000;
     let mut pairs = Vec::new();
 
     // Reading in chunks to avoid long transaction error.
