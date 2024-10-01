@@ -2,9 +2,9 @@ use crate::univ2_factory::UniV2Pair;
 use alloy::primitives::Address;
 use rkyv::rancor::Error;
 use rkyv::{deserialize, rancor, Archive, Deserialize, Serialize};
-use std::{env, fs};
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::{env, fs};
 use thiserror::Error;
 
 #[derive(Debug, Error)]

@@ -24,7 +24,7 @@ reth-node-types = { git = "https://github.com/paradigmxyz/reth" }
 reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth" }
 reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth" }
 
-alloy = { version = "0.3.6", features = ["rpc-types", "asm-keccak"] }
+alloy = { version = "0.4.0", features = ["rpc-types", "asm-keccak"] }
 alloy-sol-types = "0.8.5"
 
 
