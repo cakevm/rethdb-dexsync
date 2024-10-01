@@ -145,14 +145,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "906e9e47764d3035ce09592cf3027a35c15e791974bf59ac37ed51045a2bb057"
 dependencies = [
  "alloy-consensus 0.4.0",
+ "alloy-contract 0.4.0",
  "alloy-core 0.8.5",
  "alloy-eips 0.4.0",
  "alloy-genesis 0.4.0",
+ "alloy-network 0.4.0",
  "alloy-provider 0.4.0",
+ "alloy-pubsub 0.4.0",
  "alloy-rpc-client 0.4.0",
  "alloy-rpc-types 0.4.0",
  "alloy-serde 0.4.0",
+ "alloy-signer 0.4.0",
+ "alloy-signer-local 0.4.0",
+ "alloy-transport 0.4.0",
  "alloy-transport-http 0.4.0",
+ "alloy-transport-ws 0.4.0",
 ]
 
 [[package]]
@@ -246,6 +253,27 @@ dependencies = [
  "alloy-rpc-types-eth 0.3.6",
  "alloy-sol-types 0.8.5",
  "alloy-transport 0.3.6",
+ "futures",
+ "futures-util",
+ "thiserror",
+]
+
+[[package]]
+name = "alloy-contract"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4d93c88e10d6b5c9f1a975f5f6ea62d9c9b95acdf50b1daea7e00c99f248f49"
+dependencies = [
+ "alloy-dyn-abi 0.8.5",
+ "alloy-json-abi 0.8.5",
+ "alloy-network 0.4.0",
+ "alloy-network-primitives 0.4.0",
+ "alloy-primitives 0.8.5",
+ "alloy-provider 0.4.0",
+ "alloy-pubsub 0.4.0",
+ "alloy-rpc-types-eth 0.4.0",
+ "alloy-sol-types 0.8.5",
+ "alloy-transport 0.4.0",
  "futures",
  "futures-util",
  "thiserror",
@@ -1532,9 +1560,9 @@ dependencies = [
 [[package]]
 name = "amms"
 version = "0.6.3"
-source = "git+https://github.com/darkforestry/amms-rs?rev=a4edb40#a4edb4051d2b2005c52f90a941b6361c2596d4ae"
+source = "git+https://github.com/m1stoyanov/amms-rs?rev=3840a00#3840a00c9d04d4d2f74b8711c7a2038d1608cdb5"
 dependencies = [
- "alloy 0.3.6",
+ "alloy 0.4.0",
  "arraydeque",
  "async-trait",
  "eyre",

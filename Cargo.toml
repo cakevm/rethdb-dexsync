@@ -33,4 +33,5 @@ tokio = { version = "1.0", features = ["full"] }
 tracing-subscriber = "0.3"
 
 pool-sync = { git="https://github.com/Zacholme7/PoolSync", rev="29a6e5a" }
-amms = { git="https://github.com/darkforestry/amms-rs", rev="a4edb40"}
+amms = { git="https://github.com/m1stoyanov/amms-rs", rev="3840a00"}
+alloy = { version = "0.4.0", features = ["provider-http"] }

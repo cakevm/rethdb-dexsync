@@ -1,3 +1,5 @@
+use crate::univ3::univ3_pool::Univ3Pool;
+use crate::univ3::{read_slot0, Univ3Slot0};
 use alloy::primitives::aliases::{U176, U24, U80};
 use alloy::primitives::{address, b256, keccak256, Address, B256, U256};
 use alloy_sol_types::SolValue;
@@ -10,15 +12,6 @@ const NEXT_POOL_ID: B256 = b256!("0000000000000000000000000000000000000000000000
 const POOL_ID_TO_POOL_KEY: B256 = b256!("000000000000000000000000000000000000000000000000000000000000000b");
 pub const UNI_V3_POSITION_MANAGER: Address = address!("c36442b4a4522e871399cd717abdd847ab11fe88");
 
-#[allow(dead_code)]
-#[derive(Debug)]
-pub struct Univ3Pool {
-    pub address: Address,
-    pub token0: Address,
-    pub token1: Address,
-    pub fee: U24,
-}
-
 #[derive(Debug)]
 pub struct PoolKey {
     token0: Address,
@@ -27,13 +20,18 @@ pub struct PoolKey {
 }
 
 pub struct UniV3PositionManager {
-    pub pools: Vec<Univ3Pool>,
+    pub pools: Vec<(Univ3Pool, Univ3Slot0)>,
 }
 
 impl UniV3PositionManager {
     pub fn load_pools<T: StateProvider>(provider: T, univ3_position_mng: Address) -> eyre::Result<Self> {
-        let pools = read_univ3_position_pools(provider, univ3_position_mng)?;
-        Ok(UniV3PositionManager { pools })
+        let pools = read_univ3_position_pools(&provider, univ3_position_mng)?;
+        let mut result = vec![];
+        for pool in pools {
+            let slot0 = read_slot0(&provider, pool.address)?;
+            result.push((pool, slot0.unwrap()));
+        }
+        Ok(UniV3PositionManager { pools: result })
     }
 }
 
