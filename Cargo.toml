@@ -1,6 +1,6 @@
 [package]
-name = "reth-direct-db-uniswap-storage"
-version = "0.0.0"
+name = "rethdb-dexsync"
+version = "0.1.0"
 publish = false
 edition = "2021"
 license = "Apache-2.0"
@@ -18,7 +18,6 @@ reth-db = { git = "https://github.com/paradigmxyz/reth" }
 reth-primitives = { git = "https://github.com/paradigmxyz/reth", features = ["asm-keccak"]}
 reth-provider = { git = "https://github.com/paradigmxyz/reth" }
 reth-rpc = { git = "https://github.com/paradigmxyz/reth" }
-reth-rpc-types = { git = "https://github.com/paradigmxyz/reth" }
 reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth" }
 reth-node-types = { git = "https://github.com/paradigmxyz/reth" }
 reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth" }
