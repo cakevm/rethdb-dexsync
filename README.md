@@ -1,8 +1,8 @@
-# Reading Uniswap v2/v3 pairs/pools using reth direct db access
+# RethDB DexSync
 
 ## Features
-- Reading Uniswap v2 pairs using reth direct db access
-- Reading Uniswap v3 pools addresses by parsing event logs
+- Reading Uniswap v2 pairs/reserves
+- Reading Uniswap v3 pools positions and slot0
 
 ## Usage
 The `RETH_DB_PATH` without /db/ directory. For example, if the path is `/home/user/reth/db/`, then the `RETH_DB_PATH` should be `/home/user/reth`.
@@ -13,7 +13,7 @@ cargo run --release --example univ3_pools
 ```
 
 ## Acknowledgements
-This crate is based on the [reth db-access example](https://github.com/paradigmxyz/reth/tree/main/examples/db-access).
+Many thanks to the team of [reth](https://github.com/paradigmxyz/reth).
 
 ## License
-This project is licensed under the [Apache 2.0](./LICENSE).
+This project is dual-licensed under the [MIT](./LICENSE-MIT) and [Apache-2.0](./LICENSE-APACHE) licenses.
