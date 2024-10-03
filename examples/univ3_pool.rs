@@ -1,6 +1,6 @@
 use alloy::primitives::address;
-use reth_direct_db_uniswap_storage::univ3::read_slot0;
-use reth_direct_db_uniswap_storage::utils::init_db_from_env;
+use rethdb_dexsync::univ3::read_slot0;
+use rethdb_dexsync::utils::init_db_from_env;
 
 fn main() -> eyre::Result<()> {
     let factory = init_db_from_env()?;

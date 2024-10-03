@@ -1,5 +1,5 @@
-use reth_direct_db_uniswap_storage::univ3::{UniV3PositionManager, UNI_V3_POSITION_MANAGER};
-use reth_direct_db_uniswap_storage::utils::init_db_from_env;
+use rethdb_dexsync::univ3::{UniV3PositionManager, UNI_V3_POSITION_MANAGER};
+use rethdb_dexsync::utils::init_db_from_env;
 
 fn main() -> eyre::Result<()> {
     let factory = init_db_from_env()?;

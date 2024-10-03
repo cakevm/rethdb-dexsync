@@ -4,7 +4,7 @@ use amms::amm::factory::Factory;
 use amms::amm::uniswap_v2::factory::UniswapV2Factory;
 use amms::sync;
 use eyre::Result;
-use reth_direct_db_uniswap_storage::univ2::UNI_V2_FACTORY;
+use rethdb_dexsync::univ2::UNI_V2_FACTORY;
 use std::sync::Arc;
 
 #[tokio::main]

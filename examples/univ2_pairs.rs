@@ -1,5 +1,5 @@
-use reth_direct_db_uniswap_storage::univ2::{UniV2Factory, UNI_V2_FACTORY};
-use reth_direct_db_uniswap_storage::utils::init_db_from_env;
+use rethdb_dexsync::univ2::{UniV2Factory, UNI_V2_FACTORY};
+use rethdb_dexsync::utils::init_db_from_env;
 use std::time::Instant;
 
 fn main() -> eyre::Result<()> {
