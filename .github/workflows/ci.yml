@@ -1,0 +1,57 @@
+name: RethDB DexSync CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [opened,synchronize,reopened]
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    if: github.repository == 'cakevm/rethdb-dexsync'
+    name: make test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - run: make test
+
+  fmt:
+    if: github.repository == 'cakevm/rethdb-dexsync'
+    name: make fmt-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - run: make fmt-check
+
+  clippy:
+    if: github.repository == 'cakevm/rethdb-dexsync'
+    name: make clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: make clippy
+
+  deny:
+    if: github.repository == 'cakevm/rethdb-dexsync'
+    name: cargo deny check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          log-level: warn
+          command: check
+          arguments: --all-features

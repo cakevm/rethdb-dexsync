@@ -10,5 +10,6 @@ target/
 *.pdb
 
 # IDE files
+*.iml
 .idea
 .vscode
