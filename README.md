@@ -1,4 +1,5 @@
 # RethDB DexSync
+This crate provides a way to read Uniswap v2/v3 pool states direct from the Reth database. This will speed up the initial sync process and reduce the load on the Ethereum node.
 
 ## Features
 - Reading Uniswap v2 pairs/reserves
