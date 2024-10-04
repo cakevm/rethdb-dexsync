@@ -1,6 +1,6 @@
 [package]
 name = "rethdb-dexsync"
-version = "0.1.0"
+version = "0.0.1"
 publish = false
 edition = "2021"
 license = "Apache-2.0 OR MIT"
@@ -13,15 +13,15 @@ rkyv = "0.8.8"
 thiserror = "1.0"
 tracing = "0.1"
 
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth" }
-reth-db = { git = "https://github.com/paradigmxyz/reth" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", features = ["asm-keccak"]}
-reth-provider = { git = "https://github.com/paradigmxyz/reth" }
-reth-rpc = { git = "https://github.com/paradigmxyz/reth" }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth" }
-reth-node-types = { git = "https://github.com/paradigmxyz/reth" }
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth" }
-reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth" }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-db = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8",  features = ["asm-keccak"]}
+reth-provider = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-rpc = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
+reth-node-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
+reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
 
 alloy = { version = "0.4.2", features = ["rpc-types", "asm-keccak"] }
 alloy-sol-types = "0.8.5"
