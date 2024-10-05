@@ -7,9 +7,10 @@ fn main() -> eyre::Result<()> {
 
     // Read all positions from PositionManager
     let position_manager = UniV3PositionManager::load_pools(factory.latest()?, UNI_V3_POSITION_MANAGER)?;
-    for (pool, slot0) in position_manager.pools.iter().take(3) {
+    for (pool, slot0, liquidity) in position_manager.pools.iter().take(3) {
         println!("Pool: {:#?}", pool);
         println!("Slot0: {:#?}", slot0);
+        println!("Liquidity: {:#?}", liquidity);
     }
     println!("Total pools: {}", position_manager.pools.len());
 

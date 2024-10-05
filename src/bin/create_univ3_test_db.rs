@@ -12,13 +12,12 @@ async fn main() -> eyre::Result<()> {
     let factory = init_db_read_only_from_env()?;
 
     /*
-    let db_ref = factory.db_ref();
-    let slots = read_all_storage_entries(db_ref.clone(), address!("11950d141ecb863f01007add7d1a342041227b58"))?;
+        let db_ref = factory.db_ref();
+        let slots = read_all_storage_entries(db_ref.clone(), address!("88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"))?;
 
-    println!("{:#?}", slots);
-    println!("{:#?}", slots.len());
-
-     */
+        println!("{:#?}", slots);
+        println!("{:#?}", slots.len());
+    */
 
     let univ3_pos_mng = UniV3PositionManager::load_pools(factory.latest()?, UNI_V3_FACTORY)?;
 
@@ -35,7 +34,7 @@ async fn main() -> eyre::Result<()> {
     let mut cursor = tx_rw.cursor_dup_write::<tables::PlainStorageState>()?;
 
     let mut pool_addresses = vec![UNI_V3_FACTORY, UNI_V3_POSITION_MANAGER];
-    for (pool, _) in univ3_pos_mng.pools {
+    for (pool, _, _) in univ3_pos_mng.pools {
         pool_addresses.push(pool.address);
     }
     // An inconsistency can happen if a new pair was added after reading the pools

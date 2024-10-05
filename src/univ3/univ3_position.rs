@@ -1,7 +1,7 @@
-use crate::univ3::univ3_pool::Univ3Pool;
+use crate::univ3::univ3_pool::{read_liquidity, Univ3Pool};
 use crate::univ3::{read_slot0, Univ3Slot0};
 use alloy::primitives::aliases::{U176, U24, U80};
-use alloy::primitives::{address, b256, keccak256, Address, B256, U256};
+use alloy::primitives::{address, b256, keccak256, Address, B256, U128, U256};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use reth_provider::StateProvider;
@@ -19,7 +19,7 @@ pub struct PoolKey {
 }
 
 pub struct UniV3PositionManager {
-    pub pools: Vec<(Univ3Pool, Univ3Slot0)>,
+    pub pools: Vec<(Univ3Pool, Univ3Slot0, U128)>,
 }
 
 impl UniV3PositionManager {
@@ -27,8 +27,21 @@ impl UniV3PositionManager {
         let pools = read_univ3_position_pools(&provider, univ3_position_mng)?;
         let mut result = vec![];
         for pool in pools {
-            let slot0 = read_slot0(&provider, pool.address)?;
-            result.push((pool, slot0.unwrap()));
+            let slot0 = match read_slot0(&provider, pool.address)? {
+                None => {
+                    return Err(eyre!("Failed to read slot0: {:#?}", pool.address));
+                }
+                Some(slot0) => slot0,
+            };
+
+            let liquidity = match read_liquidity(&provider, pool.address)? {
+                None => {
+                    return Err(eyre!("Failed to read liquidity: {:#?}", pool.address));
+                }
+                Some(liquidity) => liquidity,
+            };
+
+            result.push((pool, slot0, liquidity));
         }
         Ok(UniV3PositionManager { pools: result })
     }

@@ -19,6 +19,7 @@ pub enum CacheError {
 pub struct DexSyncCache {}
 
 impl DexSyncCache {
+    /// Save data to a file
     pub fn save<T: Serialize>(path: &Path, address: Address, data: T) -> eyre::Result<()> {
         if !Path::new(&path).exists() {
             fs::create_dir_all(path)?;
@@ -29,6 +30,7 @@ impl DexSyncCache {
         Ok(())
     }
 
+    /// Load data from a file
     pub fn load<T>(path: &Path, address: Address) -> Result<T, CacheError>
     where
         T: DeserializeOwned,

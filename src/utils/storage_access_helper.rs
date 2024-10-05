@@ -6,6 +6,7 @@ use reth_primitives::StorageEntry;
 use reth_provider::StateProvider;
 use std::sync::Arc;
 
+/// Read an array item from storage
 pub fn read_array_item<T: StateProvider>(
     provider: &T,
     contract_address: Address,
@@ -23,6 +24,7 @@ pub fn read_array_item<T: StateProvider>(
     }
 }
 
+/// Read all storage entries for a given address
 pub fn read_all_storage_entries(db_ref: Arc<DatabaseEnv>, address: Address) -> eyre::Result<Vec<StorageEntry>> {
     let tx = db_ref.tx()?;
     let mut cursor = tx.new_cursor::<tables::PlainStorageState>()?;

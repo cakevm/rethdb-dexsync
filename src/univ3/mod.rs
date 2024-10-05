@@ -1,3 +1,4 @@
+mod ticks;
 mod univ3_pool;
 mod univ3_position;
 
