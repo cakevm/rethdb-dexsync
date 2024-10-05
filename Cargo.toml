@@ -25,7 +25,7 @@ reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"
 reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
 reth-stages = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" , features = ["test-utils"]}
 
-alloy = { version = "0.4.2", features = ["rpc-types", "asm-keccak"] }
+alloy = { version = "0.4.2", features = ["rpc-types", "asm-keccak", "eips"] }
 alloy-sol-types = "0.8.5"
 serde = { version = "1.0.210", features = ["derive"] }
 

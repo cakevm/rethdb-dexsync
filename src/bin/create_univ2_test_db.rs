@@ -1,3 +1,4 @@
+use alloy::eips::BlockNumberOrTag;
 use reth_db::cursor::DbCursorRW;
 use reth_db::tables;
 use reth_db::transaction::DbTxMut;
@@ -8,8 +9,8 @@ use std::path::{Path, PathBuf};
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    let factory = init_db_read_only_from_env()?;
-    let univ2_factory = UniV2Factory::load_pairs(factory.latest()?, UNI_V2_FACTORY, None)?;
+    let provider_factory = init_db_read_only_from_env()?;
+    let univ2_factory = UniV2Factory::load_pairs(&provider_factory, &BlockNumberOrTag::Latest, UNI_V2_FACTORY, None)?;
 
     let test_db_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata").join("univ2-test-db");
     create_path_if_not_exists(&test_db_path)?;
@@ -29,7 +30,7 @@ async fn main() -> eyre::Result<()> {
     }
     // An inconsistency can happen if a new pair was added after reading the pools
     for address in pair_addresses {
-        let db_ref = factory.db_ref();
+        let db_ref = provider_factory.db_ref();
         let slots = read_all_storage_entries(db_ref.clone(), address)?;
 
         for slot in slots {

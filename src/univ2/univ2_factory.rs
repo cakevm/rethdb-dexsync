@@ -1,13 +1,17 @@
 use crate::univ2::univ2_pair::UniV2Pair;
 use crate::univ2::{univ2_pair, UniV2PairReserve};
-use crate::utils::{read_array_item, CacheError, DexSyncCache};
+use crate::utils::{read_array_item, state_provider, CacheError, DexSyncCache};
+use alloy::eips::BlockNumberOrTag;
 use alloy::primitives::{b256, keccak256, Address, B256, U160};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use lazy_static::lazy_static;
-use reth_provider::StateProvider;
+use reth_db::DatabaseEnv;
+use reth_provider::providers::ProviderNodeTypes;
+use reth_provider::{ProviderFactory, StateProvider};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::sync::Arc;
 use tracing::debug;
 
 const ALL_PAIRS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000003");
@@ -34,7 +38,12 @@ pub struct UniV2Factory {
 }
 
 impl UniV2Factory {
-    pub fn load_pairs<T: StateProvider>(provider: T, factory_address: Address, cache_path: Option<PathBuf>) -> eyre::Result<Self> {
+    pub fn load_pairs<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
+        provider_factory: &ProviderFactory<N>,
+        block_number_or_tag: &BlockNumberOrTag,
+        factory_address: Address,
+        cache_path: Option<PathBuf>,
+    ) -> eyre::Result<Self> {
         let cached = Self::read_cached_pairs_if_exists(&cache_path, factory_address)?;
         // Convert cached pools to pairs
         let mut pairs = cached.pairs;
@@ -42,11 +51,11 @@ impl UniV2Factory {
         // Add new pairs since last cache write from pair index
         let start_idx = if !pairs.is_empty() { pairs.len() - 1 } else { 0 };
         debug!("Loaded new pools: {}", start_idx);
-        let (new_pairs, _) = read_univ2_pairs(&provider, factory_address, start_idx)?;
+        let (new_pairs, _) = read_univ2_pairs(provider_factory, block_number_or_tag, factory_address, start_idx)?;
         pairs.extend(new_pairs);
 
         // populate reserves for pairs
-        let pairs_and_reserves = read_univ2_pairs_reserves(&provider, pairs)?;
+        let pairs_and_reserves = read_univ2_pairs_reserves(provider_factory, block_number_or_tag, pairs)?;
 
         if cache_path.is_some() {
             let pairs = pairs_and_reserves.iter().map(|(pair, _)| pair.clone()).collect();
@@ -78,11 +87,13 @@ impl UniV2Factory {
 }
 
 /// Reads all Uniswap V2 pair from the factory contract. The result is not sorted.
-pub fn read_univ2_pairs<T: StateProvider>(
-    provider: T,
+pub fn read_univ2_pairs<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
+    provider_factory: &ProviderFactory<N>,
+    block_number_or_tag: &BlockNumberOrTag,
     factory_address: Address,
     start_idx: usize,
 ) -> eyre::Result<(Vec<UniV2Pair>, usize)> {
+    let provider = state_provider(provider_factory, block_number_or_tag)?;
     let pairs_length = match provider.storage(factory_address, ALL_PAIRS_SLOT)? {
         None => return Err(eyre!("Invalid pair length")),
         Some(l) => l.to::<usize>(),
@@ -94,6 +105,8 @@ pub fn read_univ2_pairs<T: StateProvider>(
     // Reading in chunks to avoid long transaction error.
     for start in (start_idx..pairs_length).step_by(chunk_size) {
         let end = std::cmp::min(start + chunk_size, pairs_length);
+        // To avoid long-running transactions we create a now provider for each chunk.
+        let provider = state_provider(provider_factory, block_number_or_tag)?;
         let pairs_chunk = read_pairs_interval(&provider, factory_address, start, end)?;
         pairs.extend(pairs_chunk);
     }
@@ -127,9 +140,14 @@ pub fn read_univ2_pairs_full<T: StateProvider>(
 }
 
 /// Read all univ2 reserves for provides pairs from the factory contract.
-pub fn read_univ2_pairs_reserves<T: StateProvider>(provider: T, pairs: Vec<UniV2Pair>) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {
+pub fn read_univ2_pairs_reserves<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
+    provider_factory: &ProviderFactory<N>,
+    block_number_or_tag: &BlockNumberOrTag,
+    pairs: Vec<UniV2Pair>,
+) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {
     let mut pairs_with_reserves = Vec::new();
 
+    let provider = state_provider(provider_factory, block_number_or_tag)?;
     for pair in pairs {
         let pair_reserves = univ2_pair::read_pair_reserves(&provider, pair.address)?;
         pairs_with_reserves.push((pair, pair_reserves));

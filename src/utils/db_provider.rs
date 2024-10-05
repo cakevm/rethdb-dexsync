@@ -1,10 +1,11 @@
+use alloy::eips::BlockNumberOrTag;
 use reth_chainspec::ChainSpecBuilder;
 use reth_db::mdbx::DatabaseArguments;
 use reth_db::{open_db_read_only, ClientVersion, DatabaseEnv};
 use reth_node_ethereum::EthereumNode;
 use reth_node_types::NodeTypesWithDBAdapter;
-use reth_provider::providers::StaticFileProvider;
-use reth_provider::ProviderFactory;
+use reth_provider::providers::{ProviderNodeTypes, StaticFileProvider};
+use reth_provider::{ProviderError, ProviderFactory, ProviderResult, StateProviderBox};
 use std::path::Path;
 use std::sync::Arc;
 
@@ -25,4 +26,15 @@ pub fn init_db_read_only(db_path: &Path) -> eyre::Result<ProviderFactory<NodeTyp
     );
 
     Ok(factory)
+}
+
+pub fn state_provider<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
+    provider_factory: &ProviderFactory<N>,
+    block_number_or_tag: &BlockNumberOrTag,
+) -> ProviderResult<StateProviderBox> {
+    match block_number_or_tag {
+        BlockNumberOrTag::Number(block_number) => provider_factory.history_by_block_number(*block_number),
+        BlockNumberOrTag::Latest => provider_factory.latest(),
+        _ => Err(ProviderError::UnsupportedProvider),
+    }
 }
