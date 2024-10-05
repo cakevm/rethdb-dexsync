@@ -18,11 +18,11 @@ reth-chainspec = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
 reth-db = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
 reth-primitives = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8",  features = ["asm-keccak"]}
 reth-provider = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
-reth-rpc = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
-reth-node-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
-reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8"  }
+reth-rpc = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-node-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
+reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" }
 reth-stages = { git = "https://github.com/paradigmxyz/reth", tag="v1.0.8" , features = ["test-utils"]}
 
 alloy = { version = "0.4.2", features = ["rpc-types", "asm-keccak", "eips"] }

@@ -6,12 +6,9 @@ use alloy::primitives::{b256, keccak256, Address, B256, U160};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use lazy_static::lazy_static;
-use reth_db::DatabaseEnv;
-use reth_provider::providers::ProviderNodeTypes;
-use reth_provider::{ProviderFactory, StateProvider};
+use reth_provider::{StateProvider, StateProviderFactory};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::sync::Arc;
 use tracing::debug;
 
 const ALL_PAIRS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000003");
@@ -38,8 +35,8 @@ pub struct UniV2Factory {
 }
 
 impl UniV2Factory {
-    pub fn load_pairs<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
-        provider_factory: &ProviderFactory<N>,
+    pub fn load_pairs<P: StateProviderFactory>(
+        provider_factory: &P,
         block_number_or_tag: &BlockNumberOrTag,
         factory_address: Address,
         cache_path: Option<PathBuf>,
@@ -87,8 +84,8 @@ impl UniV2Factory {
 }
 
 /// Reads all Uniswap V2 pair from the factory contract. The result is not sorted.
-pub fn read_univ2_pairs<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
-    provider_factory: &ProviderFactory<N>,
+pub fn read_univ2_pairs<P: StateProviderFactory>(
+    provider_factory: &P,
     block_number_or_tag: &BlockNumberOrTag,
     factory_address: Address,
     start_idx: usize,
@@ -140,8 +137,8 @@ pub fn read_univ2_pairs_full<T: StateProvider>(
 }
 
 /// Read all univ2 reserves for provides pairs from the factory contract.
-pub fn read_univ2_pairs_reserves<N: ProviderNodeTypes<DB = Arc<DatabaseEnv>>>(
-    provider_factory: &ProviderFactory<N>,
+pub fn read_univ2_pairs_reserves<P: StateProviderFactory>(
+    provider_factory: &P,
     block_number_or_tag: &BlockNumberOrTag,
     pairs: Vec<UniV2Pair>,
 ) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {

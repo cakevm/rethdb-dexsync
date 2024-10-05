@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
     let provider_factory = init_db_read_only_from_env()?;
+
     let univ2_factory = UniV2Factory::load_pairs(&provider_factory, &BlockNumberOrTag::Latest, UNI_V2_FACTORY, None)?;
 
     let test_db_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata").join("univ2-test-db");

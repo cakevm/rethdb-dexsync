@@ -1,3 +1,4 @@
+use reth_provider::StateProviderFactory;
 use rethdb_dexsync::univ3::{UniV3PositionManager, UNI_V3_POSITION_MANAGER};
 use rethdb_dexsync::utils::init_db_read_only_from_env;
 

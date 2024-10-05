@@ -1,6 +1,7 @@
 use reth_db::cursor::DbCursorRW;
 use reth_db::tables;
 use reth_db::transaction::DbTxMut;
+use reth_provider::StateProviderFactory;
 use rethdb_dexsync::test_utils::init_test_db_rw;
 use rethdb_dexsync::univ3::{UniV3PositionManager, UNI_V3_FACTORY, UNI_V3_POSITION_MANAGER};
 use rethdb_dexsync::utils::{init_db_read_only_from_env, read_all_storage_entries};
