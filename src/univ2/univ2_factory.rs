@@ -180,7 +180,7 @@ fn read_pairs_full_interval<T: StateProvider>(
 mod tests {
     use super::*;
     use crate::univ2::UNI_V2_FACTORY;
-    use alloy::primitives::U256;
+    use alloy::primitives::{address, U256};
     use reth_primitives::{Account, StorageEntry};
     use reth_stages::test_utils::TestStageDB;
 
