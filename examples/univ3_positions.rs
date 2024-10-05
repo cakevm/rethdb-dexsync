@@ -1,8 +1,8 @@
 use rethdb_dexsync::univ3::{UniV3PositionManager, UNI_V3_POSITION_MANAGER};
-use rethdb_dexsync::utils::init_db_from_env;
+use rethdb_dexsync::utils::init_db_read_only_from_env;
 
 fn main() -> eyre::Result<()> {
-    let factory = init_db_from_env()?;
+    let factory = init_db_read_only_from_env()?;
 
     // Read all positions from PositionManager
     let position_manager = UniV3PositionManager::load_pools(factory.latest()?, UNI_V3_POSITION_MANAGER)?;

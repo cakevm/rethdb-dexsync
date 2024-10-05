@@ -1,39 +1,43 @@
 use crate::univ2::univ2_pair::UniV2Pair;
 use crate::univ2::{univ2_pair, UniV2PairReserve};
-use crate::utils::read_array_item;
-use crate::utils::{CachedPool, PoolsCache};
-use alloy::primitives::{address, b256, keccak256, Address, B256, U160};
+use crate::utils::{read_array_item, CacheError, DexSyncCache};
+use alloy::primitives::{b256, keccak256, Address, B256, U160};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use lazy_static::lazy_static;
 use reth_provider::StateProvider;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use tracing::debug;
 
 const ALL_PAIRS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000003");
-
-pub const UNI_V2_FACTORY: Address = address!("5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f");
 
 lazy_static! {
     static ref ALL_PAIRS_START_SLOT: B256 = keccak256(ALL_PAIRS_SLOT.abi_encode());
 }
 
+// Smart caching all pairs with address, token0 and token1. Only new pairs will be loaded.
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct UniV2FactoryCache {
+    pub pairs: Vec<UniV2Pair>,
+}
+
+impl UniV2FactoryCache {
+    pub fn new() -> Self {
+        Self { pairs: Vec::new() }
+    }
+}
+
+#[derive(Debug, Default)]
 pub struct UniV2Factory {
     pub pairs: Vec<(UniV2Pair, UniV2PairReserve)>,
 }
 
 impl UniV2Factory {
-    pub fn load_pairs<T: StateProvider>(provider: T, factory_address: Address) -> eyre::Result<Self> {
-        // Read cached pairs if exists
-        let mut pools_cache = match PoolsCache::load(factory_address) {
-            Ok(pools_cache) => pools_cache,
-            Err(e) => {
-                debug!("Failed to load pools cache: {}", e);
-                PoolsCache::new(factory_address)
-            }
-        };
-        debug!("Loaded pools cache: {}", pools_cache.pools.len());
+    pub fn load_pairs<T: StateProvider>(provider: T, factory_address: Address, cache_path: Option<PathBuf>) -> eyre::Result<Self> {
+        let cached = Self::read_cached_pairs_if_exists(&cache_path, factory_address)?;
         // Convert cached pools to pairs
-        let mut pairs = pools_cache.pools.iter().map(UniV2Pair::from).collect::<Vec<_>>();
+        let mut pairs = cached.pairs;
 
         // Add new pairs since last cache write from pair index
         let start_idx = if !pairs.is_empty() { pairs.len() - 1 } else { 0 };
@@ -42,12 +46,34 @@ impl UniV2Factory {
         pairs.extend(new_pairs);
 
         // populate reserves for pairs
-        let reserves = read_univ2_pairs_reserves(&provider, pairs)?;
+        let pairs_and_reserves = read_univ2_pairs_reserves(&provider, pairs)?;
 
-        pools_cache.pools = reserves.iter().map(|(pair, _)| CachedPool::from(pair)).collect();
-        pools_cache.save()?;
+        if cache_path.is_some() {
+            let pairs = pairs_and_reserves.iter().map(|(pair, _)| pair.clone()).collect();
+            let cache = UniV2FactoryCache { pairs };
+            DexSyncCache::save(&cache_path.unwrap(), factory_address, cache)?;
+        }
 
-        Ok(Self { pairs: reserves })
+        Ok(Self { pairs: pairs_and_reserves })
+    }
+
+    fn read_cached_pairs_if_exists(cache_path: &Option<PathBuf>, factory_address: Address) -> eyre::Result<UniV2FactoryCache> {
+        let factory = match &cache_path {
+            Some(cache_path) => {
+                let factory = match DexSyncCache::load::<UniV2FactoryCache>(cache_path, factory_address) {
+                    Ok(univ2_factory) => univ2_factory,
+                    Err(cache_error) => match cache_error {
+                        CacheError::Io(e) => return Err(eyre!(e)),
+                        CacheError::Bincode(e) => return Err(eyre!(e)),
+                        CacheError::FileNotFound => UniV2FactoryCache::new(),
+                    },
+                };
+                debug!("Loaded pools cache: {}", factory.pairs.len());
+                factory
+            }
+            None => UniV2FactoryCache::new(),
+        };
+        Ok(factory)
     }
 }
 
@@ -122,9 +148,9 @@ fn read_pair_address<T: StateProvider>(provider: T, factory_address: Address, id
 fn read_pairs_interval<T: StateProvider>(provider: T, factory_address: Address, start: usize, end: usize) -> eyre::Result<Vec<UniV2Pair>> {
     let mut pairs = Vec::new();
 
-    for i in start..end {
-        let pair_address = read_pair_address(&provider, factory_address, i)?;
-        let pair = univ2_pair::read_pair(&provider, pair_address, i)?;
+    for idx in start..end {
+        let pair_address = read_pair_address(&provider, factory_address, idx)?;
+        let pair = univ2_pair::read_pair(&provider, pair_address)?;
         pairs.push(pair);
     }
 
@@ -140,12 +166,53 @@ fn read_pairs_full_interval<T: StateProvider>(
 ) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {
     let mut pairs = Vec::new();
 
-    for i in start..end {
-        let pair_address = read_pair_address(&provider, factory_address, i)?;
-        let pair = univ2_pair::read_pair(&provider, pair_address, i)?;
+    for idx in start..end {
+        let pair_address = read_pair_address(&provider, factory_address, idx)?;
+        let pair = univ2_pair::read_pair(&provider, pair_address)?;
         let pair_reserves = univ2_pair::read_pair_reserves(&provider, pair_address)?;
         pairs.push((pair, pair_reserves));
     }
 
     Ok(pairs)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::univ2::UNI_V2_FACTORY;
+    use alloy::primitives::U256;
+    use reth_primitives::{Account, StorageEntry};
+    use reth_stages::test_utils::TestStageDB;
+
+    #[test]
+    fn test_read_pair_address() -> eyre::Result<()> {
+        let test_db = TestStageDB::default();
+
+        let pair_address_0 = address!("b4e16d0168e52d35cacd2c6185b44281ec28c9dc");
+        let pair_address_18 = address!("5d27df1a6e03254e4f1218607d8e073667ffae2f");
+        let fist_pair = (
+            UNI_V2_FACTORY,
+            (
+                Account::default(),
+                vec![
+                    StorageEntry::new(
+                        b256!("c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b"),
+                        U256::from_be_slice(pair_address_0.as_slice()),
+                    ),
+                    StorageEntry::new(
+                        b256!("c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f86d"),
+                        U256::from_be_slice(pair_address_18.as_slice()),
+                    ),
+                ],
+            ),
+        );
+        test_db.insert_accounts_and_storages(vec![fist_pair])?;
+
+        let pair_address = read_pair_address(test_db.factory.latest()?, UNI_V2_FACTORY, 0)?;
+        assert_eq!(pair_address, pair_address_0);
+
+        let pair_address = read_pair_address(test_db.factory.latest()?, UNI_V2_FACTORY, 18)?;
+        assert_eq!(pair_address, pair_address_18);
+        Ok(())
+    }
 }
