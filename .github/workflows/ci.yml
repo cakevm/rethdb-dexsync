@@ -36,8 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        components: clippy
+      - uses: dtolnay/rust-toolchain@stable,clippy
       - uses: Swatinem/rust-cache@v2
       - run: make clippy
 
