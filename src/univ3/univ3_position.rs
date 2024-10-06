@@ -18,6 +18,7 @@ pub struct PoolKey {
     fee: U24,
 }
 
+#[derive(Debug)]
 pub struct UniV3PositionManager {
     pub pools: Vec<(Univ3Pool, Univ3Slot0, U128)>,
 }
