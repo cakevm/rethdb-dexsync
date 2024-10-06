@@ -35,12 +35,7 @@ impl UniV3PositionManager {
                 Some(slot0) => slot0,
             };
 
-            let liquidity = match read_liquidity(&provider, pool.address)? {
-                None => {
-                    return Err(eyre!("Failed to read liquidity: {:#?}", pool.address));
-                }
-                Some(liquidity) => liquidity,
-            };
+            let liquidity = read_liquidity(&provider, pool.address)?;
 
             result.push((pool, slot0, liquidity));
         }

@@ -25,13 +25,13 @@ pub struct Univ3Slot0 {
     pub unlocked: bool,
 }
 
-pub fn read_liquidity<T: StateProvider>(provider: T, pool_address: Address) -> eyre::Result<Option<U128>> {
+pub fn read_liquidity<T: StateProvider>(provider: T, pool_address: Address) -> eyre::Result<U128> {
     match provider.storage(pool_address, LIQUIDITY_SLOT) {
         Ok(storage_value) => match storage_value {
-            None => Ok(None), // slot not found
+            None => Ok(U128::ZERO), // the pool has no liquidity
             Some(value) => {
                 let bytes: [u8; 32] = value.to_be_bytes();
-                Ok(Some(U128::from_be_slice(&bytes[16..32])))
+                Ok(U128::from_be_slice(&bytes[16..32]))
             }
         },
         Err(e) => Err(eyre!(e)),
@@ -78,21 +78,27 @@ mod tests {
         let test_db = TestStageDB::default();
 
         let pool_weth_usdc = address!("88e6a0c2ddd26feeb64f039a2c41296fcb3f5640");
-        let pool_storage = (
-            pool_weth_usdc,
+        let pool_weth_mkr = address!("886072a44bdd944495eff38ace8ce75c1eacdaf6"); // no liquidity
+        let pool_storages = vec![
             (
-                Account::default(),
-                vec![StorageEntry::new(
-                    LIQUIDITY_SLOT,
-                    U256::from_be_slice(b256!("000000000000000000000000000000000000000000000000028a48a2ae28f10f").as_slice()),
-                )],
+                pool_weth_usdc,
+                (
+                    Account::default(),
+                    vec![StorageEntry::new(
+                        LIQUIDITY_SLOT,
+                        U256::from_be_slice(b256!("000000000000000000000000000000000000000000000000028a48a2ae28f10f").as_slice()),
+                    )],
+                ),
             ),
-        );
-        test_db.insert_accounts_and_storages(vec![pool_storage])?;
+            (pool_weth_mkr, (Account::default(), vec![StorageEntry::new(LIQUIDITY_SLOT, U256::ZERO)])),
+        ];
+        test_db.insert_accounts_and_storages(pool_storages)?;
 
         let liquidity = read_liquidity(test_db.factory.latest()?, pool_weth_usdc)?;
-        assert!(liquidity.is_some());
-        assert_eq!(liquidity.unwrap(), U128::from(183038598405746959u128));
+        assert_eq!(liquidity, U128::from(183038598405746959u128));
+
+        let liquidity = read_liquidity(test_db.factory.latest()?, pool_weth_mkr)?;
+        assert_eq!(liquidity, U128::ZERO);
 
         Ok(())
     }
