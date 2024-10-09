@@ -3,7 +3,7 @@ use reth_db::cursor::DbCursorRW;
 use reth_db::tables;
 use reth_db::transaction::DbTxMut;
 use rethdb_dexsync::test_utils::init_test_db_rw;
-use rethdb_dexsync::univ2::{UniV2Factory, UNI_V2_FACTORY};
+use rethdb_dexsync::univ2::{PoolFilter, UniV2Factory, UNI_V2_FACTORY};
 use rethdb_dexsync::utils::{init_db_read_only_from_env, read_all_storage_entries};
 use std::path::{Path, PathBuf};
 
@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 async fn main() -> eyre::Result<()> {
     let provider_factory = init_db_read_only_from_env()?;
 
-    let univ2_factory = UniV2Factory::load_pairs(&provider_factory, &BlockNumberOrTag::Latest, UNI_V2_FACTORY, None)?;
+    let univ2_factory = UniV2Factory::load_pairs(&provider_factory, &BlockNumberOrTag::Latest, UNI_V2_FACTORY, &PoolFilter::new(), None)?;
 
     let test_db_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata").join("univ2-test-db");
     create_path_if_not_exists(&test_db_path)?;

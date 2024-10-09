@@ -30,6 +30,22 @@ impl UniV2FactoryCache {
 }
 
 #[derive(Debug, Default)]
+pub struct PoolFilter {
+    // Exclusive filter all pairs with block timestamp after this value.
+    block_timestamp_after: u32,
+}
+
+impl PoolFilter {
+    pub fn new() -> Self {
+        Self { block_timestamp_after: 0 }
+    }
+    pub fn block_timestamp_after(&mut self, block_timestamp_after: u32) -> &mut Self {
+        self.block_timestamp_after = block_timestamp_after;
+        self
+    }
+}
+
+#[derive(Debug, Default)]
 pub struct UniV2Factory {
     pub pairs: Vec<(UniV2Pair, UniV2PairReserve)>,
 }
@@ -39,6 +55,7 @@ impl UniV2Factory {
         provider_factory: &P,
         block_number_or_tag: &BlockNumberOrTag,
         factory_address: Address,
+        filter: &PoolFilter,
         cache_path: Option<PathBuf>,
     ) -> eyre::Result<Self> {
         let cached = Self::read_cached_pairs_if_exists(&cache_path, factory_address)?;
@@ -52,7 +69,7 @@ impl UniV2Factory {
         pairs.extend(new_pairs);
 
         // populate reserves for pairs
-        let pairs_and_reserves = read_univ2_pairs_reserves(provider_factory, block_number_or_tag, pairs)?;
+        let pairs_and_reserves = read_univ2_pairs_reserves(provider_factory, block_number_or_tag, pairs, filter)?;
 
         if cache_path.is_some() {
             let pairs = pairs_and_reserves.iter().map(|(pair, _)| pair.clone()).collect();
@@ -141,12 +158,16 @@ pub fn read_univ2_pairs_reserves<P: StateProviderFactory>(
     provider_factory: &P,
     block_number_or_tag: &BlockNumberOrTag,
     pairs: Vec<UniV2Pair>,
+    filter: &PoolFilter,
 ) -> eyre::Result<Vec<(UniV2Pair, UniV2PairReserve)>> {
     let mut pairs_with_reserves = Vec::new();
 
     let provider = state_provider(provider_factory, block_number_or_tag)?;
     for pair in pairs {
         let pair_reserves = univ2_pair::read_pair_reserves(&provider, pair.address)?;
+        if pair_reserves.block_timestamp_last <= filter.block_timestamp_after {
+            continue;
+        }
         pairs_with_reserves.push((pair, pair_reserves));
     }
 

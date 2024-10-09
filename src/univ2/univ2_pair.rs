@@ -17,7 +17,7 @@ pub struct UniV2Pair {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UniV2PairReserve {
-    pub block_timestamp_last: U32,
+    pub block_timestamp_last: u32,
     pub reserve0: U112,
     pub reserve1: U112,
 }
@@ -44,13 +44,13 @@ pub fn read_pair<T: StateProvider>(provider: T, pair_address: Address) -> eyre::
 pub fn read_pair_reserves<T: StateProvider>(provider: T, pair_address: Address) -> eyre::Result<UniV2PairReserve> {
     let (block_timestamp_last, reserve1, reserve0) = match provider.storage(pair_address, PAIR_RESERVE) {
         Ok(storage_value) => match storage_value {
-            None => (U32::ZERO, U112::ZERO, U112::ZERO), // pair not initialized
+            None => (0, U112::ZERO, U112::ZERO), // pair not initialized
             Some(value) => {
                 let bytes = value.to_be_bytes_vec();
                 let block_timestamp_last = U32::from_be_slice(&bytes[0..4]);
                 let reserve1 = U112::from_be_slice(&bytes[4..18]);
                 let reserve0 = U112::from_be_slice(&bytes[18..32]);
-                (block_timestamp_last, reserve1, reserve0)
+                (block_timestamp_last.to::<u32>(), reserve1, reserve0)
             }
         },
         Err(e) => return Err(eyre!(e)),
