@@ -1,4 +1,4 @@
-use alloy::primitives::{Address, StorageValue, B256, U256};
+use alloy_primitives::{Address, StorageValue, B256, U256};
 use eyre::eyre;
 use reth_db::cursor::DbCursorRO;
 use reth_db::{tables, Database, DatabaseEnv};

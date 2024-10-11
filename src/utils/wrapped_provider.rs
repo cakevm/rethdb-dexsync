@@ -1,5 +1,5 @@
 use alloy::eips::{BlockNumHash, BlockNumberOrTag};
-use alloy::primitives::{BlockHash, BlockNumber, B256};
+use alloy_primitives::{BlockHash, BlockNumber, B256};
 use reth_chainspec::{ChainInfo, ChainSpec};
 use reth_db::DatabaseEnv;
 use reth_node_ethereum::EthereumNode;

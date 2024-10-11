@@ -1,7 +1,7 @@
 mod univ2_factory;
 mod univ2_pair;
 
-use alloy::primitives::{address, Address};
+use alloy_primitives::{address, Address};
 pub use univ2_factory::{PoolFilter, UniV2Factory};
 pub use univ2_pair::{UniV2Pair, UniV2PairReserve};
 

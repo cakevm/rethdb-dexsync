@@ -1,7 +1,7 @@
 use crate::univ3::univ3_pool::{read_liquidity, Univ3Pool};
 use crate::univ3::{read_slot0, Univ3Slot0};
-use alloy::primitives::aliases::{U176, U24, U80};
-use alloy::primitives::{address, b256, keccak256, Address, B256, U128, U256};
+use alloy_primitives::aliases::{U176, U24, U80};
+use alloy_primitives::{address, b256, keccak256, Address, B256, U128, U256};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use reth_provider::StateProvider;
@@ -106,7 +106,7 @@ pub fn compute_address(factory: Address, key: &PoolKey) -> eyre::Result<Address>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use alloy::primitives::address;
+    use alloy_primitives::address;
 
     #[test]
     fn test_compute_address() {

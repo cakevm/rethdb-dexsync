@@ -2,7 +2,7 @@ use crate::univ2::univ2_pair::UniV2Pair;
 use crate::univ2::{univ2_pair, UniV2PairReserve};
 use crate::utils::{read_array_item, state_provider, CacheError, DexSyncCache};
 use alloy::eips::BlockNumberOrTag;
-use alloy::primitives::{b256, keccak256, Address, B256, U160};
+use alloy_primitives::{b256, keccak256, Address, B256, U160};
 use alloy_sol_types::SolValue;
 use eyre::eyre;
 use lazy_static::lazy_static;
@@ -216,7 +216,7 @@ fn read_pairs_full_interval<T: StateProvider>(
 mod tests {
     use super::*;
     use crate::univ2::UNI_V2_FACTORY;
-    use alloy::primitives::{address, U256};
+    use alloy_primitives::{address, U256};
     use reth_primitives::{Account, StorageEntry};
     use reth_stages::test_utils::TestStageDB;
 

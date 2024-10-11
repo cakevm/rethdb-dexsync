@@ -2,7 +2,7 @@ mod ticks;
 mod univ3_pool;
 mod univ3_position;
 
-use alloy::primitives::{address, Address};
+use alloy_primitives::{address, Address};
 pub use univ3_pool::{read_slot0, Univ3Pool, Univ3Slot0};
 pub use univ3_position::{read_univ3_position_pools, UniV3PositionManager};
 

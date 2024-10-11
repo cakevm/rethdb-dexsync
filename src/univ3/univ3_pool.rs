@@ -1,5 +1,5 @@
-use alloy::primitives::aliases::{I24, U24};
-use alloy::primitives::{b256, Address, B256, U128, U16, U160};
+use alloy_primitives::aliases::{I24, U24};
+use alloy_primitives::{b256, Address, B256, U128, U16, U160};
 use eyre::eyre;
 use reth_provider::StateProvider;
 
@@ -69,7 +69,7 @@ pub fn read_slot0<T: StateProvider>(provider: T, pool_address: Address) -> eyre:
 #[cfg(test)]
 mod tests {
     use super::*;
-    use alloy::primitives::{address, U256};
+    use alloy_primitives::{address, U256};
     use reth_primitives::{Account, StorageEntry};
     use reth_stages::test_utils::TestStageDB;
 

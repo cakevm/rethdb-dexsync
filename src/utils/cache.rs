@@ -1,4 +1,4 @@
-use alloy::primitives::Address;
+use alloy_primitives::Address;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::fs;

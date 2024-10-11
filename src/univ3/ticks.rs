@@ -1,5 +1,5 @@
-use alloy::primitives::aliases::I24;
-use alloy::primitives::{b256, keccak256, B256};
+use alloy_primitives::aliases::I24;
+use alloy_primitives::{b256, keccak256, B256};
 use alloy_sol_types::SolValue;
 use lazy_static::lazy_static;
 use std::collections::HashMap;

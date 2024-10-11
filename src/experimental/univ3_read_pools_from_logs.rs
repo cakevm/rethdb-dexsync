@@ -1,13 +1,15 @@
-use crate::experimental::univ3_read_pools_from_logs::UniswapV3Factory::PoolCreated;
 use crate::univ3::UNI_V3_FACTORY;
-use alloy::primitives::{b256, Address, B256};
 use alloy::rpc::types::{BlockNumHash, Filter, FilteredParams};
+use alloy_primitives::{b256, Address, B256};
 use alloy_sol_types::sol;
 use reth_primitives::BlockHashOrNumber;
-use reth_provider::{BlockReader, ProviderError};
-use reth_rpc_eth_types::logs_utils::append_matching_block_logs;
+use reth_provider::ProviderError;
+use reth_rpc_eth_types::logs_utils::{append_matching_block_logs, ProviderOrBlock};
 use std::iter::StepBy;
 use std::ops::RangeInclusive;
+
+use crate::experimental::univ3_read_pools_from_logs::UniswapV3Factory::PoolCreated;
+use reth_storage_api::BlockReader;
 
 sol! (
     contract UniswapV3Factory {
@@ -51,7 +53,7 @@ pub fn read_univ3_pools<T: BlockReader>(provider: T) -> eyre::Result<Vec<Address
                 if let Some(receipts) = provider.receipts_by_block(BlockHashOrNumber::from(block_hash))? {
                     append_matching_block_logs(
                         &mut all_logs,
-                        &provider,
+                        ProviderOrBlock::Provider(&provider),
                         &filter_params,
                         BlockNumHash::new(header.number, block_hash),
                         &receipts,

@@ -1,5 +1,5 @@
-use alloy::primitives::aliases::U112;
-use alloy::primitives::{b256, Address, B256, U160, U32};
+use alloy_primitives::aliases::U112;
+use alloy_primitives::{b256, Address, B256, U160, U32};
 use eyre::eyre;
 use reth_provider::StateProvider;
 use serde::{Deserialize, Serialize};
@@ -62,7 +62,7 @@ pub fn read_pair_reserves<T: StateProvider>(provider: T, pair_address: Address) 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use alloy::primitives::{address, U256};
+    use alloy_primitives::{address, U256};
     use reth_primitives::{Account, StorageEntry};
     use reth_stages::test_utils::TestStageDB;
 
