@@ -7,7 +7,7 @@ use std::collections::HashMap;
 const MIN_TICK: i32 = -887272;
 const MAX_TICK: i32 = -MIN_TICK;
 
-const TICKS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000005");
+pub const TICKS_SLOT: B256 = b256!("0000000000000000000000000000000000000000000000000000000000000005");
 
 macro_rules! fill_slot_keys_ticks_map {
     ($slot:expr, $tick_spacing:expr) => {{
