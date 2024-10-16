@@ -12,12 +12,23 @@ async fn main() -> eyre::Result<()> {
     let factory = init_db_read_only_from_env()?;
 
     /*
-        let db_ref = factory.db_ref();
-        let slots = read_all_storage_entries(db_ref.clone(), address!("88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"))?;
+    let start = std::time::Instant::now();
+    let db_ref = factory.db_ref();
+    let slots = read_all_storage_entries(db_ref.clone(), address!("88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"))?;
 
-        println!("{:#?}", slots);
-        println!("{:#?}", slots.len());
-    */
+    let mut populated_tick = 0;
+    for slot in slots.iter() {
+        if SLOT_KEYS_TO_TICKS.contains_key(&slot.key) {
+            populated_tick += 1;
+        }
+    }
+
+    println!("populated: {}", populated_tick);
+    println!("total: {}", slots.len());
+    println!("time: {:?}", start.elapsed());
+
+    return Ok(());
+     */
 
     let univ3_pos_mng = UniV3PositionManager::load_pools(factory.latest()?, UNI_V3_FACTORY)?;
 

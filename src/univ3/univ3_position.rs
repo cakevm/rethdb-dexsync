@@ -1,5 +1,5 @@
-use crate::univ3::univ3_pool::{read_liquidity, Univ3Pool};
-use crate::univ3::{read_slot0, Univ3Slot0};
+use crate::univ3::univ3_pool::{UniswapV3Pool, Univ3Pool};
+use crate::univ3::Univ3Slot0;
 use alloy_primitives::aliases::{U176, U24, U80};
 use alloy_primitives::{address, b256, keccak256, Address, B256, U128, U256};
 use alloy_sol_types::SolValue;
@@ -28,14 +28,14 @@ impl UniV3PositionManager {
         let pools = read_univ3_position_pools(&provider, univ3_position_mng)?;
         let mut result = vec![];
         for pool in pools {
-            let slot0 = match read_slot0(&provider, pool.address)? {
+            let slot0 = match UniswapV3Pool::read_slot0(&provider, pool.address)? {
                 None => {
                     return Err(eyre!("Failed to read slot0: {:#?}", pool.address));
                 }
                 Some(slot0) => slot0,
             };
 
-            let liquidity = read_liquidity(&provider, pool.address)?;
+            let liquidity = UniswapV3Pool::read_liquidity(&provider, pool.address)?;
 
             result.push((pool, slot0, liquidity));
         }

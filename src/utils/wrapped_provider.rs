@@ -11,6 +11,7 @@ use reth_provider::{
 use std::sync::Arc;
 
 // Helper wrapper to have StateProviderFactory implemented for exex and db provider
+#[derive(Clone)]
 pub struct WrappedProviderFactory {
     inner: ProviderFactory<NodeTypesWithDBAdapter<EthereumNode, Arc<DatabaseEnv>>>,
 }
