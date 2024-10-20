@@ -4,33 +4,33 @@ version = "0.0.1"
 publish = false
 edition = "2021"
 license = "Apache-2.0 OR MIT"
-
+rust-version = "1.82"
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 eyre = "0.6"
-lazy_static = "1.5.0"
+lazy_static = "1.5"
 bincode = "1.3.3"
 thiserror = "1.0"
 tracing = "0.1"
 
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-db = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e",  features = ["asm-keccak"]}
-reth-provider = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-rpc = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-node-types = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
-reth-stages = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" , features = ["test-utils"]}
-reth-storage-api = { git = "https://github.com/paradigmxyz/reth", rev="9c8360e" }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-db = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev="de07436",  features = ["asm-keccak"]}
+reth-provider = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-rpc = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-node-types = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-blockchain-tree = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
+reth-stages = { git = "https://github.com/paradigmxyz/reth", rev="de07436" , features = ["test-utils"]}
+reth-storage-api = { git = "https://github.com/paradigmxyz/reth", rev="de07436" }
 
 alloy-primitives = "0.8.7"
 alloy-sol-types = "0.8.7"
-alloy = { version = "0.4.2", features = ["rpc-types", "asm-keccak", "eips"] }
+alloy = { version = "0.5", features = ["rpc-types", "asm-keccak", "eips"] }
 
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 
 
 [dev-dependencies]
@@ -38,7 +38,7 @@ tracing-subscriber = "0.3"
 
 pool-sync = { git="https://github.com/Zacholme7/PoolSync", rev="29a6e5a" }
 amms = { git="https://github.com/m1stoyanov/amms-rs", rev="3840a00"}
-alloy = { version = "0.4.2", features = ["provider-http"] }
+alloy = { version = "0.5", features = ["provider-http"] }
 
 criterion = { version = "0.5", features = ["html_reports"] }
 
