@@ -37,7 +37,7 @@ serde = { version = "1.0", features = ["derive"] }
 tracing-subscriber = "0.3"
 
 pool-sync = { git="https://github.com/Zacholme7/PoolSync", rev="29a6e5a" }
-amms = { git="https://github.com/m1stoyanov/amms-rs", rev="3840a00"}
+amms = { git="https://github.com/cakevm/amms-rs", rev="0f2a764"}
 alloy = { version = "0.5", features = ["provider-http"] }
 
 criterion = { version = "0.5", features = ["html_reports"] }

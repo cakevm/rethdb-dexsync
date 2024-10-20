@@ -1,7 +1,7 @@
 .PHONY: build run test clean fmt fmt-check deny-check clippy
 
 build:
-	cargo build --all
+	cargo build --all --examples
 
 release:
 	cargo build --release
